@@ -4,13 +4,19 @@
   "description": "Backend Support for all things infrastructure for a site map application. Support DNS Record Management via cloudFlare and Linode CLI during spin up/down script.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.2",
+    "cloudflare": "^3.4.0",
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4"
   }
 }

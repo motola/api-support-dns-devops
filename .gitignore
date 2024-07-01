@@ -1,1 +1,5 @@
 node_modules
+addDNSrecords.js
+app.js
+config.js
+.env
