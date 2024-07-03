@@ -8,20 +8,24 @@ class CloudflareAPI {
     this.baseURL = 'https://api.cloudflare.com/client/v4';
   }
 
-
-  
-  async createDNSRecord(zoneId, record) {
-    try {
-      const url = `${this.baseURL}/zones/${zoneId}/dns_records`;
-      const headers = {
+  // Declaring headers as a method since it would be accessed by all the function in the class.
+    headers() {
+      return {
         'X-Auth-Email': this.email,
         'X-Auth-Key': this.apiKey,
         'Content-Type': 'application/json'
-      };
+      }
+     }
+
+  // Create a DNS Record
+  async createDNSRecord(zoneId, record) {
+    try {
+      const url = `${this.baseURL}/zones/${zoneId}/dns_records`;
+    
       
       const response = await fetch(url, {
         method: 'POST',
-        headers: headers,
+        headers: this.headers(),
         body: JSON.stringify(record)
       });
 
@@ -43,34 +47,32 @@ class CloudflareAPI {
       throw new Error(`Error creating DNS record: ${error.message}`);
     }
   }
+  // End Creation
 
-  // async deleteDNSRecord(zoneId, recordId) {
-  //   try {
-  //     const response = await axios.delete(`${this.baseURL}/zones/${zoneId}/dns_records/${recordId}`, {
-  //       headers: {
-  //         'X-Auth-Email': this.email,
-  //         'X-Auth-Key': this.apiKey,
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-  //     return response.data;
-  //   } catch (error) {
-  //     throw new Error(`Error deleting DNS record: ${error.message}`);
-  //   }
-  // }
 
+
+  // Delete a DNS Record
+
+  async deleteDNSRecord(zoneId, recordId) {
+    try {
+      const response = await axios.delete(`${this.baseURL}/zones/${zoneId}/dns_records/${recordId}`, {
+        headers: this.headers(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error deleting DNS record: ${error.message}`);
+    }
+  }
+   // End Deletion
   
+
+  // List all Records and Index them
   async listDNSRecords(zoneId) {
    const url = `${this.baseURL}/zones/${zoneId}/dns_records`;
-   const headers = {
-      'X-Auth-Email': this.email,
-      'X-Auth-Key': this.apiKey,
-      'Content-Type': 'application/json'
-    }
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: headers
+        headers: this.headers()
       });
       
       if (!response.ok) {
@@ -93,6 +95,12 @@ class CloudflareAPI {
       throw new Error(`Error listing DNS records: ${error.message}`);
     }
   }
+  // End Listing
+
+
+
+  // Create Pages project 
+ 
   
 }
 
