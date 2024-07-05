@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 const port = 2000;
 
-const { spinUp, spinDown, listAll, startPage, listAllPages } = require('./spinup');
+const { spinUp, spinDown, listAll, startPage, listAllPages, removePage } = require('./spinup');
 console.log(spinUp);
 
 app.use(express.json());
@@ -55,7 +55,6 @@ app.post('/api/spindown', async (req, res) => {
 app.post('/create/pages', async (req, res) => {
   try {
  const resAe = await startPage();
- console.log(res);
  res.status(200).send({message: 'Pages created successfully:', data: resAe});
   } catch (error) {
     res.status(500).send(`Create Pages failed: ${error.message}`);
@@ -75,6 +74,17 @@ app.get('/list/pages', async (req, res) => {
  res.status(200).send({message: 'Pages listed successfully:', data: data});
   } catch (error) {
     res.status(500).send(`List Pages failed: ${error.message}`);
+  }
+})
+// Delete a page
+app.delete('/delete/page', async (req, res) => {
+  try {
+ const response = await removePage();
+ console.log(response);
+ 
+ res.status(200).send({message: 'Project deleted successfully:'});
+  } catch (error) {
+    res.status(500).send(`Page Delete failed: ${error.message}`);
   }
 })
 

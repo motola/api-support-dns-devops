@@ -1,6 +1,6 @@
 
-const CloudflareAPI = require('./cfIntegration.js/dnsApi');
-const pagesAPI = require('./cfIntegration.js/pagesApi');
+const CloudflareAPI = require('./cfIntegration/dnsApi');
+const pagesAPI = require('./cfIntegration/pagesApi');
 
 const dotenv = require('dotenv');
 
@@ -76,13 +76,13 @@ async function spinDown(recordId) {
 
 async function startPage() {
   const pagesInfo = {
-    projectName : 'stemtoe',
+    projectName : 'spocket',
     gitRepository: 'sleek2'
   }
   try {
     const result = await pages.createPages(accountId, pagesInfo.projectName);
     
-    console.log('Page Created', result);
+    
     return result;
   } catch (error) {
     console.error('Error creating Pages', error);
@@ -90,7 +90,7 @@ async function startPage() {
 
 
 }
-
+// List all pages
 async function listAllPages() {
   try {
     const result = await pages.getAllPages(accountId);
@@ -100,12 +100,26 @@ async function listAllPages() {
   } catch (error) {
     console.error('Error creating Pages', error);
   }
+
+  
+}
+
+// Delete pages
+async function removePage(projectNameFromReq) {
+
+  const projectName = 'fuiguf'
+  try {
+    const result = await pages.deletePages(accountId, projectName);
+    
+    console.log('Page Deleted', result);
+    return result;
+  } catch (error) {
+    console.error('Error creating Pages', error);
+  }
 }
 
 
 
 
 
-
-
-module.exports = { spinUp, spinDown, listAll, startPage, listAllPages };
+module.exports = { spinUp, spinDown, listAll, startPage, listAllPages, removePage };
