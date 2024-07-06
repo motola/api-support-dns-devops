@@ -5,55 +5,26 @@ dotenv.config();
 
 
 const app = express();
-const port = 2000;
+const port = process.env.PORT || 2000;
 
-const { spinUp, spinDown, listAll, startPage, listAllPages, removePage } = require('./spinup');
-console.log(spinUp);
+const { startPage, listAllPages, removePage, createDeploy } = require('./spinup');
+const dnsRoutes = require('./Routes/dnsRoutes');
+
+
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}))
 
-//Spin down DNS Records
-app.post('/api/spinup', async (req, res) => {
-  try {
-   const result = await spinUp();
-   console.log(result);
-    res.status(200).send(result);
-  } catch (error) {
-    res.status(500).send(`Spin up failed: ${error.message}`);
-  }
-});
 
 
-// List All DNS Records
-app.get('/api/listall', async (req, res) => {
-    try {
-     const result = await listAll();
-    
-      res.status(200).send(result);
-    } catch (error) {
-      res.status(500).send(`Spin up failed: ${error.message}`);
-    }
-  });
+// Routes for all dns Records
+app.use('/dns', dnsRoutes)
 
 
-//Spin up DNS Records
-app.post('/api/spindown', async (req, res) => {
-  
-
-  try {
-    const { recordId } = req.body;
-  console.log(recordId);
-  const result =  await spinDown(recordId);
-  console.log(result);
-    res.status(200).send('Spin down completed successfully:');
-  } catch (error) {
-    res.status(500).send(`Spin down failed: ${error.message}`);
-  }
-});
 /// Create a Cloud Fare Page
 app.post('/create/pages', async (req, res) => {
   try {
+  
  const resAe = await startPage();
  res.status(200).send({message: 'Pages created successfully:', data: resAe});
   } catch (error) {
@@ -86,6 +57,17 @@ app.delete('/delete/page', async (req, res) => {
   } catch (error) {
     res.status(500).send(`Page Delete failed: ${error.message}`);
   }
+})
+// Create a deployment
+app.post('/api/deployments', async (req, res) => {
+
+  try {
+     const response = await createDeploy();
+     res.status(200).send({message: "deployment initiation in progress", data: response});
+  } catch (error) {
+
+  }
+
 })
 
 // Default Pages
