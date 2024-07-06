@@ -1,6 +1,6 @@
-
-const CloudflareAPI = require('./cfIntegration/dnsApi');
-const pagesAPI = require('./cfIntegration/pagesApi');
+const CloudflareAPI = require('./cloudFlareAPIs/dnsApi');
+const PagesAPI = require('./cloudFlareAPIs/pagesApi');
+const DeploymentAPI = require('./cloudFlareAPIs/deployPagesApi');
 
 const dotenv = require('dotenv');
 
@@ -17,9 +17,20 @@ const zoneId = process.env.CLOUDFLARE_ZONE_ID;
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 
 
-// Instantiate CloudFlareApi
+// Instantiate CloudFlareApis
 const dns = new CloudflareAPI(apiKey, email);
-const pages = new pagesAPI(apiKey, email);
+const pages = new PagesAPI(apiKey, email);
+const deployment = new DeploymentAPI(apiKey, email);
+
+// Making Pages Info Global for use
+const pagesInfo = {
+  projectName : 'fashiondev',
+  projectOwner: 'motola1',
+  gitRepo: 'blain',
+  branch: 'main',
+  deployment_id: 'a7b3ad54-1ab0-4604-926c-6f724bde3c5c'
+  
+}
 
 // List all DNS Records created on CloudFlare
 async function listAll() {
@@ -43,7 +54,7 @@ async function listAll() {
 async function spinUp() {
   const newRecord = {
     type: 'A',
-    name: 'hr',
+    name: 'andrew',
     content: '192.15.1.3',
     ttl: 120,     
     proxied: false
@@ -73,14 +84,11 @@ async function spinDown(recordId) {
   }
 }
 
-
+// Create CloudFlare Pages
 async function startPage() {
-  const pagesInfo = {
-    projectName : 'spocket',
-    gitRepository: 'sleek2'
-  }
+
   try {
-    const result = await pages.createPages(accountId, pagesInfo.projectName);
+    const result = await pages.createPages(accountId, pagesInfo.projectName, pagesInfo.projectOwner, pagesInfo.gitRepo, pagesInfo.branch);
     
     
     return result;
@@ -118,8 +126,33 @@ async function removePage(projectNameFromReq) {
   }
 }
 
+// Create Deployment
+async function createDeploy () {
+  try {
+    const result = await deployment.createDeployment(accountId, pagesInfo.projectName);
+    
+    console.log(result);
+    return result;
+  } catch (error){
+    throw new Error(`Error deploying pages: ${error.message}`)
+  }
+}
+
+//Get all deployments
+
+async function getAllDeployment () {
+  try {
+    const result = await deployment.getDeployment(accountId, pagesInfo.projectName, pagesInfo.deployment_id);
+    
+    console.log(result);
+    return result;
+  } catch (error){
+    throw new Error(`Error deploying pages: ${error.message}`)
+  }
+
+}
 
 
 
 
-module.exports = { spinUp, spinDown, listAll, startPage, listAllPages, removePage };
+module.exports = { spinUp, spinDown, listAll, startPage, listAllPages, removePage, createDeploy, getAllDeployment };
