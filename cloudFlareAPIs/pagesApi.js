@@ -13,7 +13,7 @@ class pagesAPI {
         }
        }
 
-async createPages(account_id, projectName) {
+async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
     try { 
       const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects`, {
         method: 'POST',
@@ -25,7 +25,7 @@ async createPages(account_id, projectName) {
         "browsers":{"BROWSER":{}},"compatibility_date":"2022-01-01","compatibility_flags":["url_standard"],"d1_databases":{"D1_BINDING":{"id":"445e2955-951a-43f8-a35b-a4d0c8138f63"}},"durable_object_namespaces":{"DO_BINDING":{"namespace_id":"5eb63bbbe01eeed093cb22bb8f5acdc3"}},"env_vars":{"ENVIRONMENT_VARIABLE":{"type":"plain_text","value":"hello world"}},"hyperdrive_bindings":{"HYPERDRIVE":{"id":"a76a99bc342644deb02c38d66082262a"}},"kv_namespaces":{"KV_BINDING":{"namespace_id":"5eb63bbbe01eeed093cb22bb8f5acdc3"}},"mtls_certificates":{"MTLS":{"certificate_id":"d7cdd17c-916f-4cb7-aabe-585eb382ec4e"}},
         "placement":{"mode":"smart"},"queue_producers":{"QUEUE_PRODUCER_BINDING":{"name":"some-queue"}},"r2_buckets":{"R2_BINDING":{"name":"some-bucket"}},
         "services":{"SERVICE_BINDING":{"entrypoint":"MyHandler","environment":"production","service":"example-worker"}},
-        "vectorize_bindings":{"VECTORIZE":{"index_name":"my_index"}}}},"latest_deployment":{},"name":"${projectName}","production_branch":"main"`
+        "vectorize_bindings":{"VECTORIZE":{"index_name":"my_index"}}}},"latest_deployment":{},"name":"${projectName}","production_branch":"main", "source":{"type":"gitlab","config":{"owner":"${projectOwner}","repo_name":"${gitRepo}","production_branch":"${branch}"}}}`
        });
 
       return response.json();
