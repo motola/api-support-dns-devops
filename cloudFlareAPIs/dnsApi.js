@@ -58,7 +58,8 @@ class CloudflareAPI {
       const response = await axios.delete(`${this.baseURL}/zones/${zoneId}/dns_records/${recordId}`, {
         headers: this.headers(),
       });
-      return response.data;
+      console.log(response);
+      return response;
     } catch (error) {
       throw new Error(`Error deleting DNS record: ${error.message}`);
     }

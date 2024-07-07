@@ -13,7 +13,7 @@ class deploymentAPI {
         }
        }
 
-
+     // Initiate a Deployment of Cloudflare connected to a gitlab Repository
      async createDeployment (account_id, projectName) {
         const form = new FormData();
         form.append("branch", "");
@@ -23,10 +23,8 @@ class deploymentAPI {
             headers: this.headers(),
             body: form
         });
-
-        return response.json()
         
-
+        return response.json()
        } catch (error) {
         throw new Error(`Error creating pages: ${error.message}`);
 
@@ -39,7 +37,7 @@ class deploymentAPI {
             method: 'GET',
             headers: this.headers()
       })
-             return response
+             return response.json()
       }  catch (error) {
 
         throw new Error(` Error retrieving deployments: ${error.message}`)
@@ -54,7 +52,7 @@ class deploymentAPI {
               method: 'GET',
               headers: this.headers()
         })
-               return response
+               return response.json()
         }  catch (error) {
   
           throw new Error(` Error retrieving deployments Info: ${error.message}`)
@@ -69,7 +67,7 @@ class deploymentAPI {
                 method: 'GET',
                 headers: this.headers()
           })
-                 return response
+                 return response.json();
           }  catch (error) {
     
             throw new Error(` Error retrieving deployments Logs: ${error.message}`)
@@ -83,10 +81,10 @@ class deploymentAPI {
                 method: 'DELETE',
                 headers: this.headers()
           })
-                 return response
+                 return response.json();
           }  catch (error) {
     
-            throw new Error(` Error retrieving deployments Logs: ${error.message}`)
+            throw new Error(` Error deleting deployments Logs: ${error.message}`)
           }
 
        }
@@ -98,10 +96,10 @@ class deploymentAPI {
                 method: 'POST',
                 headers: this.headers()
           })
-                 return response
+                 return response.json();
           }  catch (error) {
     
-            throw new Error(` Error retrieving deployments Logs: ${error.message}`)
+            throw new Error(` Error retrying deployments: ${error.message}`)
           }
        }
 
@@ -114,10 +112,10 @@ class deploymentAPI {
                 method: 'POST',
                 headers: this.headers()
           })
-                 return response
+                 return response.json()
           }  catch (error) {
     
-            throw new Error(` Error retrieving deployments Logs: ${error.message}`)
+            throw new Error(` Error rolling back deployments: ${error.message}`)
           }
        }
 

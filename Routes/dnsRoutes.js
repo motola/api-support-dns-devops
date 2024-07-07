@@ -17,7 +17,7 @@ app.post('/api/spinup', spinUp);
 
 
 // --- 3 Spin DOWN DNS Records ---- //
-app.post('/api/spindown', spinDown);
+app.delete('/api/spindown', spinDown);
 
 
 
