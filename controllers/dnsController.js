@@ -21,6 +21,7 @@ const dns = new CloudflareAPI(apiKey, email);
 
 // List all DNS Records created on CloudFlare
 async function listAll(req, res) {
+   
     try {
       const data = await dns.listDNSRecords(zoneId);
       console.log(`5yth -->`, zoneId);
@@ -42,7 +43,7 @@ async function listAll(req, res) {
 async function spinUp(req, res) {
   const newRecord = {
     type: 'A',
-    name: 'mndrew',
+    name: 'ppdrew',
     content: '192.15.1.3',
     ttl: 120,     
     proxied: false
@@ -51,8 +52,8 @@ async function spinUp(req, res) {
   try {
     const result = await dns.createDNSRecord(zoneId, newRecord);
     
-    console.log('DNS Record Created:', result.result);
-    return res.status(200).send(result.result);;
+    console.log('DNS Record Created:', result);
+   res.status(200).send(result);;
   } catch (error) {
     console.error('Error creating DNS record:', error);
     res.status(500).send(`Error creating pages: ${error.message}`)
@@ -63,11 +64,13 @@ async function spinUp(req, res) {
 // Delete DNS Record
 async function spinDown(req, res) {
   // Read from the request body on postman
+  const { recordId } = req.body;
+  console.log(recordId);
   try {
     const result = await dns.deleteDNSRecord(zoneId, recordId);
     
-    console.log('DNS Record Created:', result);
-    return res.status(200).send(result);
+    console.log('DNS Record Created:', result.result);
+    res.status(200).send(result.data);
   } catch (error) {
     console.error('Error creating DNS record:', error);
    return res.status(500).send(`Error returning pages: ${error.message}`)
