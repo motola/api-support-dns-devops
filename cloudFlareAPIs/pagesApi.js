@@ -1,8 +1,9 @@
 class pagesAPI {
-    constructor(apiKey, email) {
+    constructor(apiKey, email, accountId) {
       this.apiKey = apiKey;
       this.email = email;
       this.baseURL = 'https://api.cloudflare.com/client/v4';
+      this.account_id = accountId
     }
 
     headers() {
@@ -45,7 +46,21 @@ async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
       return response.json();
   }
   catch (error) {
-    throw new Error(`Error creating pages: ${error.message}`);
+    throw new Error(`Error getting pages: ${error.message}`);
+  }
+  }
+
+  async getPage(project_name) {
+    try { 
+      const response = await fetch(`${this.baseURL}/accounts/${this.account_id}/pages/projects/${project_name}`, {
+        method: 'GET',
+        headers: this.headers(),
+       });
+
+      return response.json();
+  }
+  catch (error) {
+    throw new Error(`Error getting a page: ${error.message}`);
   }
   }
 
@@ -59,7 +74,7 @@ async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
       return response.json();
   }
   catch (error) {
-    throw new Error(`Error deleting pages: ${error.message}`);
+    throw new Error(`Error deleting a page: ${error.message}`);
   }
   }
 }
