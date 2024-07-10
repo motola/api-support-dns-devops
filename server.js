@@ -11,6 +11,7 @@ const port = process.env.PORT || 2000;
 const deployRoutes = require('./Routes/deploymentRoutes');
 const dnsRoutes = require('./Routes/dnsRoutes');
 const pagesRoutes = require('./Routes/pagesRoutes');
+const domainRoutes = require('./Routes/pagesDomainRoutes');
 
 
 
@@ -23,29 +24,18 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use('/dns', dnsRoutes)
 app.use('/api', pagesRoutes)
 app.use('/api', deployRoutes)
+app.use('/api', domainRoutes)
 
 
 
+app.get('/', (req, res) => {
+  res.send('sign up complete')
 
-
-
-
-           
-// Create a deployment
-// app.post('/api/deployments', async (req, res) => {
-
-//   try {
-//      const response = await createDeploy();
-//      res.status(200).send({message: "deployment initiation in progress", data: response});
-//   } catch (error) {
-
-//   }
-
-// })
+})
 
 // Default Pages
 app.use('/', (req, res) => {
-    res.send('sign up complete')
+    res.send('Error 404 Not Found');
 
 })
 

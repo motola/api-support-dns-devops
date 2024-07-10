@@ -9,28 +9,21 @@ dotenv.config();
 const apiKey = process.env.CLOUDFLARE_API_KEY;
 const email = process.env.CLOUDFLARE_EMAIL;
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+const projectOwner = process.env.OWNER
+const branch = process.env.BRANCH
 
 
 // Instantiate CloudFlareApis
-const pages = new PagesAPI(apiKey, email);
+const pages = new PagesAPI(apiKey, email, accountId);
 
 
-// Making Pages Info Global for use
-const pagesInfo = {
-    projectName : 'poiuhu',
-    projectOwner: 'motola1',
-    gitRepo: 'testprod',
-    branch: 'main',
-    deployment_id: 'a7b3ad54-1ab0-4604-926c-6f724bde3c5c'
-    
-  }
-  
-  
-  
   // Create CloudFlare Pages
   async function startPage(req, res) {
+    const {projectName, gitRepo } = req.pagesInfo;
+    
     try {
-      const result = await pages.createPages(accountId, pagesInfo.projectName, pagesInfo.projectOwner, pagesInfo.gitRepo, pagesInfo.branch);
+      const result = await pages.createPages(accountId, projectName, projectOwner, gitRepo, branch);
+      console.log(result);
       res.status(200).send({message: 'Pages created successfully:', data: result})
     } catch (error) {
       console.error('Error creating Pages', error);
@@ -39,13 +32,18 @@ const pagesInfo = {
   
   
   }
-  // List all pages
+  // // List Cloudfare Pages
   async function listAllPages(req, res) {
     try {
-      const result = await pages.getAllPages(accountId);
+      const results = await pages.getAllPages(accountId);
       
-      console.log('Page Created', result);
-      res.status(200).send(result)
+      
+      const indexResult = results.result.map((result, index) => ({
+         uniqueId: index++,
+         ...result
+        }));
+      console.log('Page Created', indexResult);
+      res.status(200).send(indexResult)
     } catch (error) {
       console.error('Error listing CloudFlare Pages', error);
       res.status(500).send(`Error listing CloudFlare Pages: ${error.message}`)
@@ -53,13 +51,26 @@ const pagesInfo = {
   
     
   }
+  // List a Cloudfare Page
+  async function listPage(req, res) {
+    const { projectName } = req.pagesInfo
+    try {
+      const result = await pages.getPage(projectName);
+      
+      console.log('Page Created', result);
+      res.status(200).send(result)
+    } catch (error) {
+      console.error('Error listing CloudFlare Pages', error);
+      res.status(500).send(`Error listing CloudFlare Pages: ${error.message}`)
+    }  
+  }
   
   // Delete pages
   async function removePage(req, res) {
   
-    const projectName = 'baked'
+    const { projectName } = req.pagesInfo
     try {
-      const result = await pages.deletePages(accountId, projectName);
+      const result = await pages.deletePages(accountId,projectName);
       
       console.log('Page Deleted', { result });
       res.status(200).send(`Project deleted successfully `)
@@ -71,4 +82,4 @@ const pagesInfo = {
   }
   
 
-  module.exports = {startPage, listAllPages, removePage };
+  module.exports = {startPage, listAllPages, removePage, listPage };
