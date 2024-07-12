@@ -23,85 +23,87 @@ const owner = process.env.OWNER
 const deployment = new DeploymentAPI(apiKey, email);
 
 // Receive deployment initiated from Clients and send a response
-async function createDeploy (req, res) {
+async function createDeploy (req, res, next) {
 
     const {projectName } = req.pagesInfo;
 
     try {
-     const response = await deployment.createDeployment(accountId, projectName)
-     console.log(response);
-     res.status(200).send({message: "Deployment", data: response});
+     const {status, data}   = await deployment.createDeployment(accountId, projectName)
+     console.log(data);
+     res.status(status).send(data);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).send(`Pages Deployment Issues: ${error.message}`)
+        error.status = 500; // Optionally set a custom status code on the error object
+        next(error);
 
     }
 
 }
 // Get deployment initiated from Clients and send a response
-async function getDeploy (req,res) {
+async function getDeploy (req,res, next) {
    const {projectName, deploymentId } = req.pagesInfo
    try {
-    const response = await deployment.getDeployment(accountId, projectName, deploymentId);
-    console.log(response);
-    res.status(200).send({message: "Deployment retrieved Sucessfully", data: response});
+    const {status, data}  = await deployment.getDeployment(accountId, projectName, deploymentId);
+    res.status(status).send(data);
 
    }
    catch (error) {
-    res.status(500).send(`Error Retrieving Deployment: ${error.message}`)
+    error.status = 500; // Optionally set a custom status code on the error object
+    next(error);
    }
 }
 // Get deployment Info initiated from Clients and send a response
-async function getDeployInfo (req,res) {
+async function getDeployInfo (req,res, next) {
     try {
-        const {projectName, deploymentId } = req.pagesInfo
-     const response = await deployment.getDeploymentInfo(accountId, projectName,deploymentId);
-     console.log(response);
-     res.status(200).send({message: "Deployment Information retrieved Sucessfully", data: response});
+     const {projectName, deploymentId } = req.pagesInfo
+     const{status, data}= await deployment.getDeploymentInfo(accountId, projectName,deploymentId);
+     res.status(status).send(data);
  
     }
     catch (error) {
-     res.status(500).send(`Error Retrieving Deployment Info: ${error.message}`)
+        error.status = 500; // Optionally set a custom status code on the error object
+        next(error);
     }
  }
  // Get deployment Logs initiated from Clients and send a response
- async function getDeployLogs (req,res) {
+ async function getDeployLogs (req,res, next) {
     try {
-        const {projectName, deploymentId } = req.pagesInfo
-     const response = await deployment.getDeploymentLogs(accountId, projectName, deploymentId);
-     console.log(response);
-     res.status(200).send({message: "Deployment Logs retrieved Sucessfully", data: response});
+     const {projectName, deploymentId } = req.pagesInfo
+     const {status, data}= await deployment.getDeploymentLogs(accountId, projectName, deploymentId);
+     res.status(status).send(data);
  
     }
     catch (error) {
-     res.status(500).send(`Error Retrieving Deployment Logs: ${error.message}`)
+        error.status = 500; // Optionally set a custom status code on the error object
+        next(error);
     }
  }
 
  // Delete deployment  and send a response
- async function deleteDeploy (req,res) {
+ async function deleteDeploy (req,res,next) {
     try {
         const {projectName, deploymentId } = req.pagesInfo
-     const response = await deployment.deleteDeployment(accountId, projectName, deploymentId);
-     console.log(response);
-     res.status(200).send({message: "Deployment deleted Sucessfully", data: response});
+     const {status, data} = await deployment.deleteDeployment(accountId, projectName, deploymentId);
+     res.status(status).send(data);
  
     }
     catch (error) {
-     res.status(500).send(`Error deleting Deployment: ${error.message}`)
+        error.status = 500; // Optionally set a custom status code on the error object
+        next(error);
     }
  }
 // Retry deployment initiated from Clients and send a response 
-async function retryDeploy (req,res) {
+async function retryDeploy (req,res, next) {
+    const {projectName, deploymentId } = req.pagesInfo
     try {
-     const response = await deployment.retryDeployment(accountId, pagesInfo.projectName, pagesInfo.deploymentId);
+     const {status, data} = await deployment.retryDeployment(accountId, projectName, deploymentId);
      console.log(response);
-     res.status(200).send({message: "Retrying Deployment Initiation", data: response});
+     res.status(status).send(data);
  
     }
     catch (error) {
-     res.status(500).send(`Error Retrying Deployment: ${error.message}`)
+        error.status = 500; // Optionally set a custom status code on the error object
+        next(error);
     }
  }
 
