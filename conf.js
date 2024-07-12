@@ -5,7 +5,8 @@ const path = require('path')
 
 
 
-// Function to read and set environment variables
+// Function to read and set env variables
+
 async function conf() {
     let primaryConfig;
     let fallbackConfig;
