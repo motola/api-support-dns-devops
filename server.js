@@ -1,17 +1,24 @@
+const conf = require('./conf');
+(async () => {
+
+  await conf();
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
-dotenv.config();
+const ErrorHandler = require('./Middleware/errorHandlers');
+
 
 
 const app = express();
 const port = process.env.PORT || 2000;
+
 
 // const {createDeploy } = require('./test');
 const deployRoutes = require('./Routes/deploymentRoutes');
 const dnsRoutes = require('./Routes/dnsRoutes');
 const pagesRoutes = require('./Routes/pagesRoutes');
 const domainRoutes = require('./Routes/pagesDomainRoutes');
+
 
 
 
@@ -33,12 +40,20 @@ app.get('/', (req, res) => {
 
 })
 
+app.use(ErrorHandler)
+
 // Default Pages
 app.use('/', (req, res) => {
-    res.send('Error 404 Not Found');
+    res.status(404).send('Error 404 Not Found');
 
-})
+});
 
+
+
+
+// Call the function to set environment variables
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+})();

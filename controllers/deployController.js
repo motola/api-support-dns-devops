@@ -9,20 +9,14 @@ dotenv.config();
 const apiKey = process.env.CLOUDFLARE_API_KEY;
 const email = process.env.CLOUDFLARE_EMAIL;
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+const owner = process.env.OWNER
 
 
 
 
 
 // Making Pages Info Global for use
-const pagesInfo = {
-    projectName : 'poiuhu',
-    projectOwner: 'motola1',
-    gitRepo: 'blain',
-    branch: 'main',
-    deploymentId: 'c3d90af1-4b83-448a-8e43-392c1d104e96'
-    
-  }
+
   
 // Instantiate CloudFlareApis
 
@@ -31,25 +25,27 @@ const deployment = new DeploymentAPI(apiKey, email);
 // Receive deployment initiated from Clients and send a response
 async function createDeploy (req, res) {
 
+    const {projectName } = req.pagesInfo;
+
     try {
-     const response = await deployment.createDeployment(accountId, pagesInfo.projectName)
+     const response = await deployment.createDeployment(accountId, projectName)
      console.log(response);
-     res.status(200).send({message: "Page Created Successfully", data: response});
+     res.status(200).send({message: "Deployment", data: response});
     }
     catch (error) {
         console.log(error);
-        res.status(200).send(`Pages Deployment Issues: ${error.message}`)
+        res.status(500).send(`Pages Deployment Issues: ${error.message}`)
 
     }
 
 }
 // Get deployment initiated from Clients and send a response
 async function getDeploy (req,res) {
-   const {projectName, deploymentId } = pagesInfo
+   const {projectName, deploymentId } = req.pagesInfo
    try {
     const response = await deployment.getDeployment(accountId, projectName, deploymentId);
     console.log(response);
-    res.status(500).send({message: "Deployment retrieved Sucessfully", data: response});
+    res.status(200).send({message: "Deployment retrieved Sucessfully", data: response});
 
    }
    catch (error) {
@@ -59,9 +55,10 @@ async function getDeploy (req,res) {
 // Get deployment Info initiated from Clients and send a response
 async function getDeployInfo (req,res) {
     try {
-     const response = await deployment.getDeploymentInfo(accountId, pagesInfo.projectName, pagesInfo.deploymentId);
+        const {projectName, deploymentId } = req.pagesInfo
+     const response = await deployment.getDeploymentInfo(accountId, projectName,deploymentId);
      console.log(response);
-     res.status(500).send({message: "Deployment Information retrieved Sucessfully", data: response});
+     res.status(200).send({message: "Deployment Information retrieved Sucessfully", data: response});
  
     }
     catch (error) {
@@ -71,9 +68,10 @@ async function getDeployInfo (req,res) {
  // Get deployment Logs initiated from Clients and send a response
  async function getDeployLogs (req,res) {
     try {
-     const response = await deployment.getDeploymentLogs(accountId, pagesInfo.projectName, pagesInfo.deploymentId);
+        const {projectName, deploymentId } = req.pagesInfo
+     const response = await deployment.getDeploymentLogs(accountId, projectName, deploymentId);
      console.log(response);
-     res.status(500).send({message: "Deployment Logs retrieved Sucessfully", data: response});
+     res.status(200).send({message: "Deployment Logs retrieved Sucessfully", data: response});
  
     }
     catch (error) {
@@ -84,9 +82,10 @@ async function getDeployInfo (req,res) {
  // Delete deployment  and send a response
  async function deleteDeploy (req,res) {
     try {
-     const response = await deployment.deleteDeployment(accountId, pagesInfo.projectName, pagesInfo.deploymentId);
+        const {projectName, deploymentId } = req.pagesInfo
+     const response = await deployment.deleteDeployment(accountId, projectName, deploymentId);
      console.log(response);
-     res.status(500).send({message: "Deployment deleted Sucessfully", data: response});
+     res.status(200).send({message: "Deployment deleted Sucessfully", data: response});
  
     }
     catch (error) {
@@ -98,7 +97,7 @@ async function retryDeploy (req,res) {
     try {
      const response = await deployment.retryDeployment(accountId, pagesInfo.projectName, pagesInfo.deploymentId);
      console.log(response);
-     res.status(500).send({message: "Retrying Deployment Initiation", data: response});
+     res.status(200).send({message: "Retrying Deployment Initiation", data: response});
  
     }
     catch (error) {
