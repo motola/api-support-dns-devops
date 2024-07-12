@@ -29,13 +29,11 @@ async function spinUp(req, res, next) {
 
   try {
 
-   const pageResult = await pages.getPage(name);
-
-    target = pageResult.result.subdomain
+   const {data} = await pages.getPage(name);
+    target = data.result.subdomain
     console.log('inside ', target);
     
   }
-
   catch (error) {
     error.status = 500; // Optionally set a custom status code on the error object
     next(error);
@@ -54,14 +52,8 @@ async function spinUp(req, res, next) {
       };
 
   try {
-    const result = await dns.createDNSRecord(zoneId, newRecord);
-
-    if (result.errors[0].code === 81053) {
-      res.status(409).send(result);
-    }
-    
-  console.log('DNS Record Created:', result);
-   res.status(200).send(result);
+     const {status, data} = await dns.createDNSRecord(zoneId, newRecord);
+     res.status(status).send(data);
   } catch (error) {
     console.error('Error creating DNS record:', error);
     error.status = 500; // Optionally set a custom status code on the error object
@@ -74,7 +66,7 @@ async function spinUp(req, res, next) {
 async function listAll(req, res, next) {
    
   try {
-    const data = await dns.listDNSRecords(zoneId);
+    const {status, data} = await dns.listDNSRecords(zoneId);
     console.log(`5yth -->`, zoneId);
     
     console.log('DNS Record Listed:', data.result);
@@ -83,7 +75,7 @@ async function listAll(req, res, next) {
       index: index++,
       ...record
     }));
-    res.status(200).send(indexedRecords);
+    res.status(status).send(indexedRecords);
   } catch (error) {
     console.log('Error Listing Records:', error);
     error.status = 500; // Optionally set a custom status code on the error object
@@ -97,10 +89,9 @@ async function spinDown(req, res, next) {
   const { recordId } = req.body;
   console.log(recordId);
   try {
-    const result = await dns.deleteDNSRecord(zoneId, recordId);
-    
-    console.log('DNS Record Created:', result.result);
-    res.status(200).send(result.data);
+    const {status, data}  = await dns.deleteDNSRecord(zoneId, recordId);
+    console.log(data);
+    res.status(status).send(data);
   } catch (error) {
     console.error('Error creating DNS record:', error);
     error.status = 500; // Optionally set a custom status code on the error object

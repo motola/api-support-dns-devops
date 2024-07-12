@@ -22,13 +22,13 @@ class CloudflareAPI {
     try {
       const url = `${this.baseURL}/zones/${zoneId}/dns_records`;
     
-      
       const response = await fetch(url, {
         method: 'POST',
         headers: this.headers(),
         body: JSON.stringify(record)
       });
-      return await response.json();
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
     } catch (error) {
       throw new Error(`Error creating DNS record: ${error.message}`);
     }
@@ -41,11 +41,13 @@ class CloudflareAPI {
 
   async deleteDNSRecord(zoneId, recordId) {
     try {
-      const response = await axios.delete(`${this.baseURL}/zones/${zoneId}/dns_records/${recordId}`, {
+      const response = await fetch(`${this.baseURL}/zones/${zoneId}/dns_records/${recordId}`, {
+        method: 'DELETE',
         headers: this.headers(),
       });
       console.log(response);
-      return response;
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
     } catch (error) {
       throw new Error(`Error deleting DNS record: ${error.message}`);
     }
@@ -75,7 +77,8 @@ class CloudflareAPI {
         }
         throw new Error(errorMessage);
       }
-      return response.json();
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
      
 
     } catch (error) {
