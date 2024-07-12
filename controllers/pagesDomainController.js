@@ -16,65 +16,80 @@ const domain = new DomainAPI(apiKey, email);
 
 
 // Adds domain name to a CloudFlare Pages, if not done DNS Records wont work.
-async function addDomain(req, res) {
+async function addDomain(req, res, next) {
     const {domainName, projectName } = req.pagesInfo
     try {
         console.log(accountId, projectName);
-      const result = await domain.addDomain(accountId, projectName, domainName);
-      console.log(result);
-      res.status(200).send({message: 'Domain created successfully:', data: result})
+      let { status, data } = await domain.addDomain(accountId, projectName, domainName);
+      // Api Error from CloudFlare. Delete success comes has 500 and Unknown error. Changed Status code to 200 & message also
+      if (status === 500 && data.errors[0].code === 8000000) {
+        status = 200;
+        data.success = true;
+        data.errors[0].message = `Domain Created Succesfully`
+      } else {
+      data.errors[0].message
+      }
+      res.status(status).send({data});
     } catch (error) {
       console.error('Error creating Pages', error);
-      res.status(500).send(`Error creating CloudFlare Pages Domain: ${error.message}`)
+      error.status = 500; // Optionally set a custom status code on the error object
+      next(error);
     }
   
   }
-
-  async function getDomains(req, res) {
+ // 
+  async function getDomains(req, res, next) {
     const { projectName } = req.pagesInfo
     try {
-      const result = await domain.getDomains(accountId, projectName);
-      res.status(200).send({message: 'Domain retrieved successfully:', data: result})
+      const {status, data } = await domain.getDomains(accountId, projectName);
+
+      res.status(status).send({data: data})
     } catch (error) {
-      console.error('Error creating Pages', error);
-      res.status(500).send(`Error retrieving CloudFlare Pages Domain: ${error.message}`)
+      // console.error('Error creating Pages', error);
+      error.status = 500; // Optionally set a custom status code on the error object
+      next(error);
     }
   
   
   }
-  async function getDomain(req, res) {
+  async function getDomain(req, res, next) {
     const {domainName, projectName } = req.pagesInfo
     
     try {
-      const result = await domain.getDomain(accountId, projectName, domainName);
-      res.status(200).send({message: 'Domain retrieved successfully:', data: result})
+      const {status, data } = await domain.getDomain(accountId, projectName, domainName);
+      res.status(status).send({data: data})
     } catch (error) {
-      console.error('Error creating Pages', error);
-      res.status(500).send(`Error retrieving CloudFlare Pages Domain: ${error.message}`)
+      error.status = 500; // Optionally set a custom status code on the error object
+      next(error);
     }
   }
 
-  async function deleteDomain(req, res) {
+  async function deleteDomain(req, res, next) {
     const {domainName, projectName } = req.pagesInfo
     try {
-      const result = await domain.deleteDomain(accountId, projectName, domainName);
-      res.status(200).send({message: 'Domain created successfully:', data: result})
+      let {status, data} = await domain.deleteDomain(accountId, projectName, domainName);
+     
+     if (status === 500 && data.errors[0].code === 8000000) {
+      status = 200
+      data.errors[0].message = `Deleted Successfully`
+    } 
+      res.status(status).send({message: data.errors[0].message})
     } catch (error) {
-      console.error('Error creating Pages', error);
-      res.status(500).send(`Error creating CloudFlare Pages Domain: ${error.message}`)
+      error.status = 500; // Optionally set a custom status code on the error object
+      next(error);
     }
   
   
   }
 
-  async function patchDomain(req, res) {
+  async function patchDomain(req, res, next) {
     const {domainName, projectName } = req.pagesInfo
     try {
-      const result = await domain.patchDomain(accountId, projectName, domainName);
-      res.status(200).send({message: 'Domain created successfully:', data: result})
+      const {status, data} = await domain.patchDomain(accountId, projectName, domainName);
+      res.status(status).send({message: 'Domain created successfully:', data: data})
     } catch (error) {
-      console.error('Error creating Pages', error);
-      res.status(500).send(`Error creating CloudFlare Pages Domain: ${error.message}`)
+      error.status = 500; // Optionally set a custom status code on the error object
+      next(error);
     }
   
   

@@ -28,20 +28,6 @@ class CloudflareAPI {
         headers: this.headers(),
         body: JSON.stringify(record)
       });
-
-      if (!response.ok) {
-        let errorMessage = `HTTP error! Status: ${response.status}`;
-        // Attempt to parse Cloudflare API error message from response body
-        try {
-          const errorResponse = await response.json();
-          if (errorResponse.errors && Array.isArray(errorResponse.errors)) {
-            errorMessage += `\nCloudflare API Error: ${errorResponse.errors.map(err => err.message).join(', ')}`;
-          }
-        } catch (parseError) {
-          console.error('Error parsing Cloudflare API response:', parseError);
-        }
-        throw new Error(errorMessage);
-      }
       return await response.json();
     } catch (error) {
       throw new Error(`Error creating DNS record: ${error.message}`);

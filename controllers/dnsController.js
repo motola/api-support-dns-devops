@@ -10,118 +10,89 @@ dotenv.config();
 const apiKey = process.env.CLOUDFLARE_API_KEY;
 const email = process.env.CLOUDFLARE_EMAIL;
 const zoneId = process.env.CLOUDFLARE_ZONE_ID;
+const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 
 
 
 // Instantiate CloudFlareApis for DNS Resolution and Crud Operations
 const dns = new CloudflareAPI(apiKey, email);
-const pages = new PagesAPI(apiKey, email);
+const pages = new PagesAPI(apiKey, email, accountId);
 
 
-
-
-
-
-// List all DNS Records created on CloudFlare
-async function listAll(req, res) {
-   
-    try {
-      const data = await dns.listDNSRecords(zoneId);
-      console.log(`5yth -->`, zoneId);
-      
-      console.log('DNS Record Listed:', data.result);
-      const dnsRecords = data.result;
-      const indexedRecords = dnsRecords.map((record, index) => ({
-        index: index++,
-        ...record
-      }));
-      res.status(200).send(indexedRecords);
-    } catch (error) {
-      console.log('Error Listing Records:', error);
-       res.status(500).send(`Spin up failed: ${error.message}`)
-    }
-  }
 
 // Create DNS Records and Post on CloudFlare
-async function spinUp(req, res) {
-  let finalResult;
+async function spinUp(req, res, next) {
   let newRecord;
-  const { name } = req.body;
-// try {
-//   const resPage = await pages.getPage(name);
-//    finalResult = resPage;
-//   finalResult;
-// }
-// catch (error) {
-
-// }
- 
-
-  
-  console.log(finalResult);
+  const { name } = req.pagesInfo;
+  let target;
 
 
-  
+  try {
+
+   const pageResult = await pages.getPage(name);
+
+    target = pageResult.result.subdomain
+    console.log('inside ', target);
+    
+  }
+
+  catch (error) {
+    error.status = 500; // Optionally set a custom status code on the error object
+    next(error);
+
+  }
+
+  console.log('DNS record target: ', target);
   // let userChoice = domainType;
   console.log(name);
-  
-  
-
-  // switch (userChoice) {
-  //   case 'platform': // Handle platform domain
-  //     // Assuming `zoneId` is the Cloudflare zone ID for the account
-  //     newRecord = {
-  //       type: 'CNAME',
-  //       name: `${name}.${zoneId}`, // Create a sub-domain under Cloudflare zone
-  //       content: finalResult, // Replace with actual CNAME target
-  //       ttl: 120,
-  //       proxied: false
-  //     };
-  //     break;
-  //   case 'own_domain': // Handle customer's own domain
-  //     newRecord = {
-  //       type: 'A',
-  //       name: name, // Replace with customer's domain name
-  //       content: '192.15.1.3', // Replace with actual IP address
-  //       ttl: 120,
-  //       proxied: false
-  //     };
-  //     break;
-  //   case 'own_subdomain': // Handle customer's own sub-domain
-  //     newRecord = {
-  //       type: 'CNAME',
-  //       name: name, // Replace with customer's sub-domain name
-  //       content: 'example.com', // Replace with actual CNAME target
-  //       ttl: 120,
-  //       proxied: false
-  //     };
-  //     break;
-  //   default:
-  //     return res.status(400).send('Invalid domain type specified');
-  // }
-
       newRecord = {
         type: 'CNAME',
         name: `${name}`, // Replace with customer's domain name
-        content: `${name}.pages.dev`, // Replace with actual IP address
+        content: target, // CNAME TARGET
         ttl: 120,
         proxied: true
       };
 
   try {
     const result = await dns.createDNSRecord(zoneId, newRecord);
+
+    if (result.errors[0].code === 81053) {
+      res.status(409).send(result);
+    }
     
-    console.log('DNS Record Created:', result);
-   res.status(200).send(result);;
+  console.log('DNS Record Created:', result);
+   res.status(200).send(result);
   } catch (error) {
     console.error('Error creating DNS record:', error);
-    res.status(500).send(`Error creating pages: ${error.message}`)
+    error.status = 500; // Optionally set a custom status code on the error object
+    next(error);
   }
 }
 
 
+// List all DNS Records created on CloudFlare
+async function listAll(req, res, next) {
+   
+  try {
+    const data = await dns.listDNSRecords(zoneId);
+    console.log(`5yth -->`, zoneId);
+    
+    console.log('DNS Record Listed:', data.result);
+    const dnsRecords = data.result;
+    const indexedRecords = dnsRecords.map((record, index) => ({
+      index: index++,
+      ...record
+    }));
+    res.status(200).send(indexedRecords);
+  } catch (error) {
+    console.log('Error Listing Records:', error);
+    error.status = 500; // Optionally set a custom status code on the error object
+    next(error);
+  }
+}
+
 // Delete DNS Record
-async function spinDown(req, res) {
+async function spinDown(req, res, next) {
   // Read from the request body on postman
   const { recordId } = req.body;
   console.log(recordId);
@@ -132,7 +103,8 @@ async function spinDown(req, res) {
     res.status(200).send(result.data);
   } catch (error) {
     console.error('Error creating DNS record:', error);
-   return res.status(500).send(`Error returning pages: ${error.message}`)
+    error.status = 500; // Optionally set a custom status code on the error object
+    next(error);
   }
 }
 
