@@ -30,7 +30,8 @@ class DomainAPI {
         })
         console.log(domainName);
        
-        return response.json();
+        let responseBody = await response.json();
+        return {status: response.status, data: responseBody}
 
       }
       catch (error) {
@@ -44,12 +45,13 @@ class DomainAPI {
      
       try {         
         console.log('CFapis: ',account_id, project_name, `${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains`)                
-        const result = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains`, {
+        const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains`, {
           method: 'GET',
           headers: this.headers(),
         })
 
-        return result.json();
+        let responseBody = await response.json();
+        return {status: response.status, data: responseBody}
 
       }
       catch (error) {
@@ -61,13 +63,13 @@ class DomainAPI {
 
      async getDomain(account_id, project_name, domain_name) {
       try {
-        const result = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
+        const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
           method: 'GET',
           headers: this.headers(),
         })
 
-        return result.json();
-
+        let responseBody = await response.json();
+        return {status: response.status, data: responseBody}
       }
       catch (error) {
         throw new Error(`Error a page domain: ${error.message}`)
@@ -78,12 +80,13 @@ class DomainAPI {
 
      async deleteDomain(account_id, project_name, domain_name) {
       try {
-        const result = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
+        const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
           method: 'DELETE',
           headers: this.headers(),
         })
 
-        return result.json();
+        let responseBody = await response.json();
+        return {status: response.status, data: responseBody}
 
       }
       catch (error) {
@@ -95,13 +98,14 @@ class DomainAPI {
 
      async patchDomain(account_id, project_name, domain_name) {
       try {
-        const result = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
+        const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects/${project_name}/domains/${domain_name}`, {
           method: 'PATCH',
           headers: this.headers(),
           body:'false'
         })
 
-        return result.json();
+        let responseBody = await response.json();
+        return {status: response.status, data: responseBody}
 
       }
       catch (error) {

@@ -29,21 +29,39 @@ async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
         "vectorize_bindings":{"VECTORIZE":{"index_name":"my_index"}}}},"latest_deployment":{},"name":"${projectName}","production_branch":"main", "source":{"type":"gitlab","config":{"owner":"${projectOwner}","repo_name":"${gitRepo}","production_branch":"${branch}"}}}`
        });
 
-      return response.json();
+       const responseBody = await response.json();
+
+       console.log(response.status);
+       return { status: response.status, data: responseBody }; 
   }
-  catch (error) {
+    catch (error) {
     throw new Error(`Error creating pages: ${error.message}`);
-  }
+   }
   }
 
-  async getAllPages(account_id) {
+async getAllPages(account_id) {
     try { 
       const response = await fetch(`${this.baseURL}/accounts/${account_id}/pages/projects`, {
         method: 'GET',
         headers: this.headers(),
        });
 
-      return response.json();
+       const responseBody = await response.json();
+
+       if (!response.ok) {  
+         let errorMessage = `HTTP error! Status: ${response.status}`;
+         
+         // Check if Cloudflare-specific errors are present
+         if (responseBody.errors && Array.isArray(responseBody.errors)) {
+           errorMessage += `\nCloudflare API Errors: ${responseBody.errors.map(err => `${err.code}: ${err.message}`).join(', ')}`;
+         }
+   
+         // Throw an error with status code and message
+         throw { status: response.status, message: errorMessage, responseBody };
+       }
+
+       return { status: response.status, data: responseBody }; 
+   
   }
   catch (error) {
     throw new Error(`Error getting pages: ${error.message}`);
@@ -57,7 +75,8 @@ async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
         headers: this.headers(),
        });
 
-      return response.json();
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
   }
   catch (error) {
     throw new Error(`Error getting a page: ${error.message}`);
@@ -71,7 +90,8 @@ async createPages(account_id, projectName, projectOwner, gitRepo, branch) {
         headers: this.headers(),
        });
 
-      return response.json();
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
   }
   catch (error) {
     throw new Error(`Error deleting a page: ${error.message}`);

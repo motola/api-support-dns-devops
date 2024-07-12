@@ -2,7 +2,7 @@ const extractDomainName = (req, res, next) => {
     const { domainName, projectName } = req.body;
 
  
-    if (domainName || domainName && projec) {
+    if (domainName || (domainName && projectName)) {
       req.pagesInfo = {
         projectName : domainName.split('.')[0],
         domainName: domainName,
