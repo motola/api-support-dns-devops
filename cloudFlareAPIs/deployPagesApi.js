@@ -24,7 +24,8 @@ class deploymentAPI {
             body: form
         });
         
-        return response.json()
+        const responseBody = await response.json();
+        return { status: response.status, data: responseBody }; 
        } catch (error) {
         throw new Error(`Error creating pages: ${error.message}`);
 
@@ -37,7 +38,8 @@ class deploymentAPI {
             method: 'GET',
             headers: this.headers()
       })
-             return response.json()
+      const responseBody = await response.json();
+      return { status: response.status, data: responseBody }; 
       }  catch (error) {
 
         throw new Error(` Error retrieving deployments: ${error.message}`)
@@ -52,7 +54,8 @@ class deploymentAPI {
               method: 'GET',
               headers: this.headers()
         })
-               return response.json()
+        const responseBody = await response.json();
+        return { status: response.status, data: responseBody }; 
         }  catch (error) {
   
           throw new Error(` Error retrieving deployments Info: ${error.message}`)
@@ -67,7 +70,8 @@ class deploymentAPI {
                 method: 'GET',
                 headers: this.headers()
           })
-                 return response.json();
+          const responseBody = await response.json();
+          return { status: response.status, data: responseBody }; 
           }  catch (error) {
     
             throw new Error(` Error retrieving deployments Logs: ${error.message}`)
@@ -81,7 +85,8 @@ class deploymentAPI {
                 method: 'DELETE',
                 headers: this.headers()
           })
-                 return response.json();
+          const responseBody = await response.json();
+          return { status: response.status, data: responseBody }; 
           }  catch (error) {
     
             throw new Error(` Error deleting deployments Logs: ${error.message}`)
@@ -96,7 +101,8 @@ class deploymentAPI {
                 method: 'POST',
                 headers: this.headers()
           })
-                 return response.json();
+          const responseBody = await response.json();
+          return { status: response.status, data: responseBody }; 
           }  catch (error) {
     
             throw new Error(` Error retrying deployments: ${error.message}`)
@@ -112,7 +118,8 @@ class deploymentAPI {
                 method: 'POST',
                 headers: this.headers()
           })
-                 return response.json()
+          const responseBody = await response.json();
+          return { status: response.status, data: responseBody }; 
           }  catch (error) {
     
             throw new Error(` Error rolling back deployments: ${error.message}`)
